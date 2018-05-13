@@ -145,6 +145,8 @@ namespace LabelEngine2.Presenters
                             newPosition.Height -= step; break;
                     }
             }
+            _view.FieldWidth = newPosition.Width;
+            _view.FieldHeight = newPosition.Height;
             _model.Repository.Templates[templateName].Fields[fieldName].RelativePosition = newPosition;
 
         }

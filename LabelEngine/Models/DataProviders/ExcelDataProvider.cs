@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using SpreadsheetLight;
 
-
 namespace LabelEngine2.Models
 {
     [System.ComponentModel.DesignerCategory("Code")]
@@ -14,8 +13,8 @@ namespace LabelEngine2.Models
         public List<Dictionary<string, string>> Data { get; set; }
 
         public DataTable Table { get => this; }
-        
-        public event System.Action TableChanged;
+
+        public event Action TableChanged;
 
         public ExcelDataProvider()
         {
@@ -29,17 +28,26 @@ namespace LabelEngine2.Models
 
             Data = new List<Dictionary<string, string>>();
             //Добавление строк в DataTable
-            for (int rowIndex = 0; rowIndex <= dv.Count - 1; rowIndex++)
+            for (int rowIndex = 0; rowIndex < dv.Count; rowIndex++)
             {
                 //Добавляем ячейки в словарь с ключами именами столбцов
                 Data.Add(new Dictionary<string, string>());
 
-                for (int columnIndex = 0; columnIndex <= this.Columns.Count - 1; columnIndex++)
+                for (int columnIndex = 0; columnIndex < this.Columns.Count; columnIndex++)
                 {
-                    Data[rowIndex].Add(Columns[columnIndex].ColumnName, (string)dv[rowIndex][columnIndex]);
-                }          
+                    try
+                    {
+                        if (dv[rowIndex][columnIndex] != System.DBNull.Value)
+                            Data[rowIndex].Add(Columns[columnIndex].ColumnName, (string)dv[rowIndex][columnIndex]);
+                        else
+                            Data[rowIndex].Add(Columns[columnIndex].ColumnName, string.Empty);
+                    }
+                    catch (InvalidCastException)
+                    {
+                        Data[rowIndex].Add(Columns[columnIndex].ColumnName, string.Empty);
+                    }
+                }
             }
-            
         }
 
         public void Load(string filePath)
@@ -79,23 +87,66 @@ namespace LabelEngine2.Models
                 this.Columns.Add(new DataColumn(h)); //Заполняем DataTable заголовками столбцов
             }
 
-            //Data = new List<Dictionary<string, string>>();
+            this.Rows.Clear();
             //Добавление строк в DataTable
             for (int rowIndex = startRowIndex; rowIndex <= stats.EndRowIndex; rowIndex++)
             {
                 //Добавляем ячейки в словарь с ключами именами столбцов
-                //Data.Add(new Dictionary<string, string>());
 
                 string[] newRow = new string[stats.NumberOfColumns]; //Массив ячеек строки
+
                 for (int columnIndex = startColumnIndex; columnIndex <= stats.EndColumnIndex; columnIndex++)
                 {
                     newRow[columnIndex - startColumnIndex] = document.GetCellValueAsString(rowIndex, columnIndex);
-                    //Data[rowIndex - startRowIndex].Add(Columns[columnIndex - startColumnIndex].ColumnName, (string)newRow[columnIndex - startColumnIndex]);
                 }
-                this.Rows.Add(newRow); 
+
+                this.Rows.Add(newRow);
             }
             this.TableChanged();
         }
 
+        public void Save(string filePath)
+        {
+            DataTable tempTable = new DataTable();
+
+            for (int i = 0; i < this.Columns.Count; i++)
+            {
+                tempTable.Columns.Add(this.Columns[i].ColumnName);
+            }
+
+            for (int i = 0; i < this.Rows.Count; i++)
+            {
+                DataRow row = tempTable.NewRow();
+                for (int j = 0; j < this.Columns.Count; j++)
+                {
+                    row[j] = this.Rows[i][j].ToString();
+                }
+                tempTable.Rows.Add(row);
+            }
+
+            SLDocument sL = new SLDocument();
+            int iStartRowIndex = 1;
+            int iStartColumnIndex = 1;
+            sL.ImportDataTable(iStartRowIndex, iStartColumnIndex, tempTable, true);
+
+            SLStyle style = sL.CreateStyle();
+
+            int iEndRowIndex = iStartRowIndex + tempTable.Rows.Count;
+            int iEndColumnIndex = iStartColumnIndex + tempTable.Columns.Count - 1;
+            sL.AutoFitColumn(iStartColumnIndex, iEndColumnIndex, 500);
+
+            SLTable table = sL.CreateTable(iStartRowIndex, iStartColumnIndex, iEndRowIndex, iEndColumnIndex);
+            table.SetTableStyle(SLTableStyleTypeValues.Medium17);
+            sL.InsertTable(table);
+
+            try
+            {
+                sL.SaveAs(filePath);
+            }
+            catch (Exception exc)
+            {
+                throw new Exception(exc.Message);
+            }
+        }
     }
 }

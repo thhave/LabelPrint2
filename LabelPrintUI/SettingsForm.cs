@@ -15,8 +15,8 @@ namespace LabelPrintUI
         public Image Preview { get => labelPreviewPB.Image; set => labelPreviewPB.Image = (Bitmap)value; }
         public List<string> TemplateList { get => (List<string>)templateListLB.DataSource; set => templateListLB.DataSource = value; }
         public List<string> SelectedTemplateFieldList { get => (List<string>)fieldsListCB.DataSource; set => fieldsListCB.DataSource = value; }
-        public float FieldWidth { get => (float)Convert.ToDouble(fieldWidthTB.Text); set => fieldWidthTB.Text = Convert.ToString(value); }
-        public float FieldHeight { get => (float)Convert.ToDouble(fieldHeightTB.Text); set => fieldHeightTB.Text = Convert.ToString(value); }
+        public float FieldWidth { get => (float)Convert.ToDouble(fieldWidthTB.Text) / 100; set => fieldWidthTB.Text = Convert.ToString(100 * value); }
+        public float FieldHeight { get => (float)Convert.ToDouble(fieldHeightTB.Text) / 100; set => fieldHeightTB.Text = Convert.ToString( 100 * value); }
 
         public SettingsForm()
         {

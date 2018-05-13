@@ -31,11 +31,11 @@
             this.leftPanel = new System.Windows.Forms.Panel();
             this.leftPanelSplitter2 = new System.Windows.Forms.Splitter();
             this.labelPreviewGB = new System.Windows.Forms.GroupBox();
-            this.labelPreviewPB = new System.Windows.Forms.PictureBox();
             this.leftPanelSplitter1 = new System.Windows.Forms.Splitter();
             this.templatesGB = new System.Windows.Forms.GroupBox();
             this.templatesListBox = new System.Windows.Forms.ListBox();
             this.topPanel = new System.Windows.Forms.Panel();
+            this.clearSearchTextBtn = new System.Windows.Forms.Button();
             this.printBtn = new System.Windows.Forms.Button();
             this.searchBtn = new System.Windows.Forms.Button();
             this.searchTB = new System.Windows.Forms.TextBox();
@@ -53,15 +53,17 @@
             this.helpMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showHelpMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showAboutMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.clearSearchTextBtn = new System.Windows.Forms.Button();
+            this.saveAsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.labelPreviewPB = new System.Windows.Forms.PictureBox();
+            this.saveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.leftPanel.SuspendLayout();
             this.labelPreviewGB.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.labelPreviewPB)).BeginInit();
             this.templatesGB.SuspendLayout();
             this.topPanel.SuspendLayout();
             this.centerPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gridView)).BeginInit();
             this.menuStrip.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.labelPreviewPB)).BeginInit();
             this.SuspendLayout();
             // 
             // leftPanel
@@ -98,16 +100,6 @@
             this.labelPreviewGB.TabIndex = 6;
             this.labelPreviewGB.TabStop = false;
             this.labelPreviewGB.Text = "Предпросмотр этикетки";
-            // 
-            // labelPreviewPB
-            // 
-            this.labelPreviewPB.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelPreviewPB.Location = new System.Drawing.Point(3, 16);
-            this.labelPreviewPB.Name = "labelPreviewPB";
-            this.labelPreviewPB.Size = new System.Drawing.Size(194, 156);
-            this.labelPreviewPB.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.labelPreviewPB.TabIndex = 0;
-            this.labelPreviewPB.TabStop = false;
             // 
             // leftPanelSplitter1
             // 
@@ -153,6 +145,16 @@
             this.topPanel.Size = new System.Drawing.Size(763, 49);
             this.topPanel.TabIndex = 1;
             // 
+            // clearSearchTextBtn
+            // 
+            this.clearSearchTextBtn.Location = new System.Drawing.Point(299, 14);
+            this.clearSearchTextBtn.Name = "clearSearchTextBtn";
+            this.clearSearchTextBtn.Size = new System.Drawing.Size(67, 26);
+            this.clearSearchTextBtn.TabIndex = 4;
+            this.clearSearchTextBtn.Text = "Очистить";
+            this.clearSearchTextBtn.UseVisualStyleBackColor = true;
+            this.clearSearchTextBtn.Click += new System.EventHandler(this.clearSearchTextBtn_Click);
+            // 
             // printBtn
             // 
             this.printBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -181,6 +183,7 @@
             this.searchTB.Name = "searchTB";
             this.searchTB.Size = new System.Drawing.Size(210, 21);
             this.searchTB.TabIndex = 0;
+            this.searchTB.KeyDown += new System.Windows.Forms.KeyEventHandler(this.searchTB_KeyDown);
             // 
             // centerPanel
             // 
@@ -201,11 +204,12 @@
             this.gridView.Location = new System.Drawing.Point(0, 0);
             this.gridView.MultiSelect = false;
             this.gridView.Name = "gridView";
-            this.gridView.ReadOnly = true;
             this.gridView.Size = new System.Drawing.Size(763, 502);
             this.gridView.TabIndex = 0;
+            this.gridView.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.gridView_CellEndEdit);
             this.gridView.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.gridView_RowEnter);
             this.gridView.SelectionChanged += new System.EventHandler(this.gridView_SelectionChanged);
+            this.gridView.UserAddedRow += new System.Windows.Forms.DataGridViewRowEventHandler(this.gridView_UserAddedRow);
             // 
             // leftSplitter
             // 
@@ -233,6 +237,8 @@
             // 
             this.fileMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openMenuItem,
+            this.saveMenuItem,
+            this.saveAsMenuItem,
             this.splitterMenuItem,
             this.exitMenuItem});
             this.fileMenuItem.Name = "fileMenuItem";
@@ -242,24 +248,25 @@
             // openMenuItem
             // 
             this.openMenuItem.Name = "openMenuItem";
-            this.openMenuItem.Size = new System.Drawing.Size(121, 22);
+            this.openMenuItem.Size = new System.Drawing.Size(180, 22);
             this.openMenuItem.Text = "Открыть";
             this.openMenuItem.Click += new System.EventHandler(this.openMenuItem_Click);
             // 
             // splitterMenuItem
             // 
             this.splitterMenuItem.Name = "splitterMenuItem";
-            this.splitterMenuItem.Size = new System.Drawing.Size(118, 6);
+            this.splitterMenuItem.Size = new System.Drawing.Size(177, 6);
             // 
             // exitMenuItem
             // 
             this.exitMenuItem.Name = "exitMenuItem";
-            this.exitMenuItem.Size = new System.Drawing.Size(121, 22);
+            this.exitMenuItem.Size = new System.Drawing.Size(180, 22);
             this.exitMenuItem.Text = "Выход";
             this.exitMenuItem.Click += new System.EventHandler(this.exitMenuItem_Click);
             // 
             // editMenuItem
             // 
+            this.editMenuItem.Enabled = false;
             this.editMenuItem.Name = "editMenuItem";
             this.editMenuItem.Size = new System.Drawing.Size(59, 20);
             this.editMenuItem.Text = "Правка";
@@ -284,6 +291,7 @@
             this.helpMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.showHelpMenuItem,
             this.showAboutMenuItem});
+            this.helpMenuItem.Enabled = false;
             this.helpMenuItem.Name = "helpMenuItem";
             this.helpMenuItem.Size = new System.Drawing.Size(65, 20);
             this.helpMenuItem.Text = "Справка";
@@ -300,15 +308,29 @@
             this.showAboutMenuItem.Size = new System.Drawing.Size(149, 22);
             this.showAboutMenuItem.Text = "О программе";
             // 
-            // clearSearchTextBtn
+            // saveAsMenuItem
             // 
-            this.clearSearchTextBtn.Location = new System.Drawing.Point(299, 14);
-            this.clearSearchTextBtn.Name = "clearSearchTextBtn";
-            this.clearSearchTextBtn.Size = new System.Drawing.Size(67, 26);
-            this.clearSearchTextBtn.TabIndex = 4;
-            this.clearSearchTextBtn.Text = "Очистить";
-            this.clearSearchTextBtn.UseVisualStyleBackColor = true;
-            this.clearSearchTextBtn.Click += new System.EventHandler(this.clearSearchTextBtn_Click);
+            this.saveAsMenuItem.Name = "saveAsMenuItem";
+            this.saveAsMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveAsMenuItem.Text = "Сохранить как...";
+            this.saveAsMenuItem.Click += new System.EventHandler(this.saveAsMenuItem_Click);
+            // 
+            // labelPreviewPB
+            // 
+            this.labelPreviewPB.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelPreviewPB.Location = new System.Drawing.Point(3, 16);
+            this.labelPreviewPB.Name = "labelPreviewPB";
+            this.labelPreviewPB.Size = new System.Drawing.Size(194, 156);
+            this.labelPreviewPB.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.labelPreviewPB.TabIndex = 0;
+            this.labelPreviewPB.TabStop = false;
+            // 
+            // saveMenuItem
+            // 
+            this.saveMenuItem.Name = "saveMenuItem";
+            this.saveMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveMenuItem.Text = "Сохранить";
+            this.saveMenuItem.Click += new System.EventHandler(this.saveMenuItem_Click);
             // 
             // mainForm
             // 
@@ -320,6 +342,7 @@
             this.Controls.Add(this.topPanel);
             this.Controls.Add(this.leftPanel);
             this.Controls.Add(this.menuStrip);
+            this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip;
             this.MinimumSize = new System.Drawing.Size(816, 614);
             this.Name = "mainForm";
@@ -328,9 +351,9 @@
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.mainForm_FormClosing);
             this.Load += new System.EventHandler(this.mainForm_Load);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.mainForm_KeyDown);
             this.leftPanel.ResumeLayout(false);
             this.labelPreviewGB.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.labelPreviewPB)).EndInit();
             this.templatesGB.ResumeLayout(false);
             this.topPanel.ResumeLayout(false);
             this.topPanel.PerformLayout();
@@ -338,6 +361,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.gridView)).EndInit();
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.labelPreviewPB)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -371,6 +395,8 @@
         private System.Windows.Forms.Splitter leftPanelSplitter2;
         private System.Windows.Forms.PictureBox labelPreviewPB;
         private System.Windows.Forms.Button clearSearchTextBtn;
+        private System.Windows.Forms.ToolStripMenuItem saveAsMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveMenuItem;
     }
 }
 

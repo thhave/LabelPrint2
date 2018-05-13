@@ -14,6 +14,7 @@ namespace LabelEngine2.Presenters
 
         public string FILES_FILTER { get; private set; } = "xlsx файлы (*.xlsx)|*.xlsx|Все файлы (*.*)|*.*";
         public IModel Model { get => _model; }
+        public string LastFileName { get; set; } = string.Empty;
 
         public MainPresenter(IMainView view, IModel model)
         {
@@ -30,8 +31,17 @@ namespace LabelEngine2.Presenters
         //View Controlling Methods
         public void LoadDataTable(string fileName)
         {
-            _model.DataProvider.Load(fileName);
+             _model.DataProvider.Load(fileName);
+        }
+
+        public void BindDataTable()
+        {
             _view.Data = _model.DataProvider.Table;
+        }
+
+        public void SaveDataTable(string fileName)
+        {
+            _model.DataProvider.Save(fileName);
         }
 
         public void FillColumnList()
@@ -67,12 +77,15 @@ namespace LabelEngine2.Presenters
         public void ActionsBeforeClose()
         {
             _model.Repository.SaveToFolder(_model.Config.TemplatePath);
-            _model.SaveState();            
+            _model.SaveState();
         }
 
         public void ChangeData(string templateName, int rowIndex)
         {
-            if (_model.DataProvider.Data.Count < rowIndex + 1)
+            if ((_view.Data.Rows.Count - 1 != _model.DataProvider.Data.Count) || (_view.Data.Rows.Count - 1 != _model.DataProvider.Table.Rows.Count))
+                ChangeTable();
+            int maxRowIndex = _model.DataProvider.Data.Count - 1;
+            if (maxRowIndex < rowIndex)
                 return;
             foreach (var entry in _model.DataProvider.Data[rowIndex])
                 if (_model.Repository.Templates[templateName].Fields.ContainsKey(entry.Key))
@@ -89,8 +102,12 @@ namespace LabelEngine2.Presenters
             _model.Printer.Print(renderer.Image);
         }
 
-        public string Search(string text)
+        public void Search(string text)
         {
+            if ((_view.Data == null) || (_view.ColumnList == null))
+                return;
+            if ((_view.ColumnList.Count == 0) || (_view.Data.Rows.Count == 0))
+                return;
             StringBuilder columnSearchQueries = new StringBuilder();
             foreach (var column in _view.ColumnList)
             {
@@ -105,13 +122,17 @@ namespace LabelEngine2.Presenters
             _view.SearchQuery = columnSearchQueries.ToString();
             _model.DataProvider.Table.DefaultView.RowFilter = columnSearchQueries.ToString();
             _model.DataProvider.OnTableChanged();
-            return columnSearchQueries.ToString();
         }
 
         public void ClearSearchText()
         {
             _view.SearchQuery = "";
             _model.DataProvider.Table.DefaultView.RowFilter = "";
+            _model.DataProvider.OnTableChanged();
+        }
+
+        public void ChangeTable()
+        {
             _model.DataProvider.OnTableChanged();
         }
 

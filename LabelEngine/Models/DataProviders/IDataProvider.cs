@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 
 namespace LabelEngine2.Models
@@ -10,5 +9,6 @@ namespace LabelEngine2.Models
         DataTable Table { get; }
         void OnTableChanged();
         void Load(string filePath);
+        void Save(string filePath);
     }
 }

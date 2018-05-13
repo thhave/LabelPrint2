@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Windows.Forms;
 using System.Data;
 using System.Reflection;
@@ -11,6 +12,7 @@ namespace LabelPrintUI
     public partial class mainForm : Form, IMainView
     {
         private BindingSource binding;
+        private ProgressBarForm progressBarForm;
 
         public mainForm()
         {
@@ -19,7 +21,10 @@ namespace LabelPrintUI
               gridView,
               new object[] { true }); //Убираем лаги DataGridView (использование двойной буферизации)
             binding = new BindingSource();
+            binding.AllowNew = true;
             gridView.DataSource = binding;
+
+            progressBarForm = new ProgressBarForm();
         }
         public DataTable Data { get => (this.binding.DataSource as DataTable); set => this.binding.DataSource = value; } //Данные из gridView
         public string SearchQuery { get => this.binding.Filter; set => this.binding.Filter = value; }
@@ -38,9 +43,30 @@ namespace LabelPrintUI
 
             if (dialog.ShowDialog() == DialogResult.OK)
             {
-                Presenter.LoadDataTable(dialog.FileName); //Загружаем данные в gridView
+                binding.DataSource = null;
+
+                BackgroundWorker bw = new BackgroundWorker();
+
+                bw.DoWork += new DoWorkEventHandler(bw_DoWork);
+                bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bw_RunWorkerCompleted);
+                bw.RunWorkerAsync();
+
+                progressBarForm.ShowDialog();
+                Presenter.BindDataTable();
                 Presenter.FillColumnList(); //Заполнить список заголовков для поиска (searchColumnCB)
+                void bw_DoWork(object s, System.ComponentModel.DoWorkEventArgs eventArgs)
+                {
+                    Presenter.LoadDataTable(dialog.FileName); //Загружаем данные в gridView
+                }
+
+                void bw_RunWorkerCompleted(object s, RunWorkerCompletedEventArgs runWorkerCompletedEventArgs)
+                {
+                    progressBarForm.Close();
+                    Presenter.LastFileName = dialog.FileName;
+                }
+
             }
+
         }
 
         public new void Show()
@@ -74,20 +100,28 @@ namespace LabelPrintUI
 
         private void gridView_RowEnter(object sender, DataGridViewCellEventArgs e)
         {
-            if ((templatesListBox.SelectedIndex >= 0) && (e.RowIndex < gridView.RowCount - 1))
+            if (templatesListBox.SelectedIndex >= 0)
                 Presenter.ChangeData(templatesListBox.SelectedItem.ToString(), e.RowIndex);
         }
 
         private void printBtn_Click(object sender, EventArgs e)
         {
-            if (templatesListBox.SelectedIndex >= 0)
+            if ((templatesListBox.SelectedIndex >= 0) && (gridView.SelectedCells.Count > 0))
                 Presenter.PrintLabel(templatesListBox.SelectedItem.ToString());
         }
 
         private void searchBtn_Click(object sender, EventArgs e)
         {
             if (searchTB.Text.Trim() != "")
+            {
                 Presenter.Search(searchTB.Text);
+                if (gridView.SelectedCells.Count > 0)
+                    this.gridView_RowEnter(sender,
+                                           new DataGridViewCellEventArgs(gridView.SelectedCells[0].ColumnIndex, gridView.SelectedCells[0].RowIndex));
+            }
+            else
+                clearSearchTextBtn_Click(sender, e);
+
         }
 
         private void gridView_SelectionChanged(object sender, EventArgs e)
@@ -100,6 +134,114 @@ namespace LabelPrintUI
         {
             Presenter.ClearSearchText();
             searchTB.Clear();
+            if (gridView.SelectedCells.Count > 0)
+                this.gridView_RowEnter(sender,
+                                       new DataGridViewCellEventArgs(gridView.SelectedCells[0].ColumnIndex, gridView.SelectedCells[0].RowIndex));
+        }
+
+        private void gridView_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            Presenter.ChangeTable();
+            this.gridView_SelectionChanged(sender, e);
+        }
+
+        private void gridView_UserAddedRow(object sender, DataGridViewRowEventArgs e)
+        {
+            gridView.Update();
+            gridView.Refresh();
+            Presenter.ChangeTable();
+            this.gridView_SelectionChanged(sender, e);
+        }
+
+        private void saveAsMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = Presenter.FILES_FILTER;
+            saveFileDialog.ShowDialog();
+
+            BackgroundWorker bw = new BackgroundWorker();
+
+            bw.DoWork += new DoWorkEventHandler(bw_DoWork);
+            bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bw_RunWorkerCompleted);
+            bw.RunWorkerAsync();
+            progressBarForm.ShowDialog();
+
+            void bw_DoWork(object s, System.ComponentModel.DoWorkEventArgs eventArgs)
+            {
+                if (saveFileDialog.FileName != "")
+                {
+                    try
+                    {
+                        Presenter.SaveDataTable(saveFileDialog.FileName);
+                    }
+                    catch (Exception exc)
+                    {
+                        MessageBox.Show(exc.Message, "Произошла ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+
+            void bw_RunWorkerCompleted(object s1, RunWorkerCompletedEventArgs runWorkerCompletedEventArgs)
+            {
+                progressBarForm.Close();
+                Presenter.LastFileName = saveFileDialog.FileName;
+            }
+        }
+
+        private void saveMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Presenter.LastFileName == string.Empty)
+            {
+                saveAsMenuItem_Click(sender, e);
+                return;
+            }
+
+            BackgroundWorker bw = new BackgroundWorker();
+
+            bw.DoWork += new DoWorkEventHandler(bw_DoWork);
+            bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bw_RunWorkerCompleted);
+            bw.RunWorkerAsync();
+            progressBarForm.ShowDialog();
+
+            void bw_DoWork(object s, System.ComponentModel.DoWorkEventArgs eventArgs)
+            {
+                try
+                {
+                    Presenter.SaveDataTable(Presenter.LastFileName);
+                }
+                catch (Exception exc)
+                {
+                    MessageBox.Show(exc.Message, "Произошла ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+
+            void bw_RunWorkerCompleted(object s1, RunWorkerCompletedEventArgs runWorkerCompletedEventArgs)
+            {
+                progressBarForm.Close();
+            }
+        }
+
+        private void mainForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Control && e.KeyCode == Keys.S)       // Ctrl-S Save
+            {
+                saveMenuItem_Click(sender, new EventArgs());
+                e.SuppressKeyPress = true;  // Stops other controls on the form receiving event.
+            }
+            else if (e.Control && e.KeyCode == Keys.P)
+            {
+                printBtn_Click(sender, new EventArgs());
+                e.SuppressKeyPress = true;  // Stops other controls on the form receiving event.
+            }
+        }
+
+        private void searchTB_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyData == Keys.Enter)
+            {
+                searchBtn_Click(sender, new EventArgs());
+                e.SuppressKeyPress = true;  // Stops other controls on the form receiving event.
+            }
         }
     }
 }
