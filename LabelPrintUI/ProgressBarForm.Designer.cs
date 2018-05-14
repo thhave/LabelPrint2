@@ -33,6 +33,7 @@
             // 
             // progressBar
             // 
+            this.progressBar.Cursor = System.Windows.Forms.Cursors.WaitCursor;
             this.progressBar.Location = new System.Drawing.Point(12, 12);
             this.progressBar.Name = "progressBar";
             this.progressBar.Size = new System.Drawing.Size(579, 24);
@@ -46,6 +47,7 @@
             this.ClientSize = new System.Drawing.Size(604, 48);
             this.ControlBox = false;
             this.Controls.Add(this.progressBar);
+            this.Cursor = System.Windows.Forms.Cursors.WaitCursor;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.MaximizeBox = false;
             this.MinimizeBox = false;

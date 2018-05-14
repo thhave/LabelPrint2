@@ -46,6 +46,12 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>LabelPrintUI.Program</StartupObject>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>df0df7b7758cd4204d3b7535ac0c0685-ribbon-label-badge-by-vexels.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="LabelEngine2">
       <HintPath>..\LabelEngine\bin\Debug\LabelEngine2.dll</HintPath>
@@ -147,6 +153,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Transparent_Background.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="df0df7b7758cd4204d3b7535ac0c0685-ribbon-label-badge-by-vexels.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

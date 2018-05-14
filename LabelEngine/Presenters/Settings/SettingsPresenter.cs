@@ -36,6 +36,12 @@ namespace LabelEngine2.Presenters
         public void LoadSettings()
         {
             _view.PrinterList = _model.Config.GetAllPrinters();
+            _view.TemplatesFolderPath = _model.Config.TemplatePath;
+        }
+        
+        public string GetPrinterName()
+        {
+            return _model.Config.PrinterName;
         }
 
         public void DeleteTemplate(string templateName)
@@ -111,7 +117,12 @@ namespace LabelEngine2.Presenters
             _model.Printer.Print(renderer.Image);
 
         }
-        public void SaveSettings() { }
+        public void SaveSettings(string printerName)
+        {
+            _model.Config.TemplatePath = _view.TemplatesFolderPath;
+            _model.Config.PrinterName = printerName;
+            _model.SaveState();
+        }
 
         public void DeleteField(string templateName, string fieldName)
         {

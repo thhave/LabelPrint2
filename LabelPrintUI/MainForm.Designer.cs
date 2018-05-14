@@ -28,9 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(mainForm));
             this.leftPanel = new System.Windows.Forms.Panel();
             this.leftPanelSplitter2 = new System.Windows.Forms.Splitter();
             this.labelPreviewGB = new System.Windows.Forms.GroupBox();
+            this.labelPreviewPB = new System.Windows.Forms.PictureBox();
             this.leftPanelSplitter1 = new System.Windows.Forms.Splitter();
             this.templatesGB = new System.Windows.Forms.GroupBox();
             this.templatesListBox = new System.Windows.Forms.ListBox();
@@ -44,7 +47,10 @@
             this.leftSplitter = new System.Windows.Forms.Splitter();
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.fileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.createDocumentMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveAsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitterMenuItem = new System.Windows.Forms.ToolStripSeparator();
             this.exitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -53,17 +59,14 @@
             this.helpMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showHelpMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showAboutMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveAsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.labelPreviewPB = new System.Windows.Forms.PictureBox();
-            this.saveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.leftPanel.SuspendLayout();
             this.labelPreviewGB.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.labelPreviewPB)).BeginInit();
             this.templatesGB.SuspendLayout();
             this.topPanel.SuspendLayout();
             this.centerPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gridView)).BeginInit();
             this.menuStrip.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.labelPreviewPB)).BeginInit();
             this.SuspendLayout();
             // 
             // leftPanel
@@ -100,6 +103,16 @@
             this.labelPreviewGB.TabIndex = 6;
             this.labelPreviewGB.TabStop = false;
             this.labelPreviewGB.Text = "Предпросмотр этикетки";
+            // 
+            // labelPreviewPB
+            // 
+            this.labelPreviewPB.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelPreviewPB.Location = new System.Drawing.Point(3, 16);
+            this.labelPreviewPB.Name = "labelPreviewPB";
+            this.labelPreviewPB.Size = new System.Drawing.Size(194, 156);
+            this.labelPreviewPB.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.labelPreviewPB.TabIndex = 0;
+            this.labelPreviewPB.TabStop = false;
             // 
             // leftPanelSplitter1
             // 
@@ -147,6 +160,7 @@
             // 
             // clearSearchTextBtn
             // 
+            this.clearSearchTextBtn.Cursor = System.Windows.Forms.Cursors.Hand;
             this.clearSearchTextBtn.Location = new System.Drawing.Point(299, 14);
             this.clearSearchTextBtn.Name = "clearSearchTextBtn";
             this.clearSearchTextBtn.Size = new System.Drawing.Size(67, 26);
@@ -158,6 +172,7 @@
             // printBtn
             // 
             this.printBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.printBtn.Cursor = System.Windows.Forms.Cursors.Hand;
             this.printBtn.Location = new System.Drawing.Point(641, 14);
             this.printBtn.Name = "printBtn";
             this.printBtn.Size = new System.Drawing.Size(110, 26);
@@ -168,6 +183,7 @@
             // 
             // searchBtn
             // 
+            this.searchBtn.Cursor = System.Windows.Forms.Cursors.Hand;
             this.searchBtn.Location = new System.Drawing.Point(226, 14);
             this.searchBtn.Name = "searchBtn";
             this.searchBtn.Size = new System.Drawing.Size(67, 26);
@@ -196,10 +212,17 @@
             // 
             // gridView
             // 
-            this.gridView.AllowUserToDeleteRows = false;
             this.gridView.AllowUserToOrderColumns = true;
             this.gridView.AllowUserToResizeRows = false;
             this.gridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.gridView.DefaultCellStyle = dataGridViewCellStyle2;
             this.gridView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.gridView.Location = new System.Drawing.Point(0, 0);
             this.gridView.MultiSelect = false;
@@ -236,6 +259,7 @@
             // fileMenuItem
             // 
             this.fileMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.createDocumentMenuItem,
             this.openMenuItem,
             this.saveMenuItem,
             this.saveAsMenuItem,
@@ -245,22 +269,44 @@
             this.fileMenuItem.Size = new System.Drawing.Size(48, 20);
             this.fileMenuItem.Text = "Файл";
             // 
+            // createDocumentMenuItem
+            // 
+            this.createDocumentMenuItem.Enabled = false;
+            this.createDocumentMenuItem.Name = "createDocumentMenuItem";
+            this.createDocumentMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.createDocumentMenuItem.Text = "Создать";
+            this.createDocumentMenuItem.Click += new System.EventHandler(this.createDocumentMenuItem_Click);
+            // 
             // openMenuItem
             // 
             this.openMenuItem.Name = "openMenuItem";
-            this.openMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openMenuItem.Size = new System.Drawing.Size(162, 22);
             this.openMenuItem.Text = "Открыть";
             this.openMenuItem.Click += new System.EventHandler(this.openMenuItem_Click);
+            // 
+            // saveMenuItem
+            // 
+            this.saveMenuItem.Name = "saveMenuItem";
+            this.saveMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.saveMenuItem.Text = "Сохранить";
+            this.saveMenuItem.Click += new System.EventHandler(this.saveMenuItem_Click);
+            // 
+            // saveAsMenuItem
+            // 
+            this.saveAsMenuItem.Name = "saveAsMenuItem";
+            this.saveAsMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.saveAsMenuItem.Text = "Сохранить как...";
+            this.saveAsMenuItem.Click += new System.EventHandler(this.saveAsMenuItem_Click);
             // 
             // splitterMenuItem
             // 
             this.splitterMenuItem.Name = "splitterMenuItem";
-            this.splitterMenuItem.Size = new System.Drawing.Size(177, 6);
+            this.splitterMenuItem.Size = new System.Drawing.Size(159, 6);
             // 
             // exitMenuItem
             // 
             this.exitMenuItem.Name = "exitMenuItem";
-            this.exitMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exitMenuItem.Size = new System.Drawing.Size(162, 22);
             this.exitMenuItem.Text = "Выход";
             this.exitMenuItem.Click += new System.EventHandler(this.exitMenuItem_Click);
             // 
@@ -308,30 +354,6 @@
             this.showAboutMenuItem.Size = new System.Drawing.Size(149, 22);
             this.showAboutMenuItem.Text = "О программе";
             // 
-            // saveAsMenuItem
-            // 
-            this.saveAsMenuItem.Name = "saveAsMenuItem";
-            this.saveAsMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.saveAsMenuItem.Text = "Сохранить как...";
-            this.saveAsMenuItem.Click += new System.EventHandler(this.saveAsMenuItem_Click);
-            // 
-            // labelPreviewPB
-            // 
-            this.labelPreviewPB.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelPreviewPB.Location = new System.Drawing.Point(3, 16);
-            this.labelPreviewPB.Name = "labelPreviewPB";
-            this.labelPreviewPB.Size = new System.Drawing.Size(194, 156);
-            this.labelPreviewPB.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.labelPreviewPB.TabIndex = 0;
-            this.labelPreviewPB.TabStop = false;
-            // 
-            // saveMenuItem
-            // 
-            this.saveMenuItem.Name = "saveMenuItem";
-            this.saveMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.saveMenuItem.Text = "Сохранить";
-            this.saveMenuItem.Click += new System.EventHandler(this.saveMenuItem_Click);
-            // 
             // mainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -342,6 +364,7 @@
             this.Controls.Add(this.topPanel);
             this.Controls.Add(this.leftPanel);
             this.Controls.Add(this.menuStrip);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip;
             this.MinimumSize = new System.Drawing.Size(816, 614);
@@ -354,6 +377,7 @@
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.mainForm_KeyDown);
             this.leftPanel.ResumeLayout(false);
             this.labelPreviewGB.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.labelPreviewPB)).EndInit();
             this.templatesGB.ResumeLayout(false);
             this.topPanel.ResumeLayout(false);
             this.topPanel.PerformLayout();
@@ -361,7 +385,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.gridView)).EndInit();
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.labelPreviewPB)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -397,6 +420,7 @@
         private System.Windows.Forms.Button clearSearchTextBtn;
         private System.Windows.Forms.ToolStripMenuItem saveAsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem createDocumentMenuItem;
     }
 }
 

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using LabelEngine2.Models;
 using System.Text;
@@ -42,6 +41,12 @@ namespace LabelEngine2.Presenters
         public void SaveDataTable(string fileName)
         {
             _model.DataProvider.Save(fileName);
+        }
+
+        public void CreateNewDocument()
+        {
+            _model.DataProvider.CreateNew();
+            _view.Data = _model.DataProvider.Table;
         }
 
         public void FillColumnList()
@@ -134,8 +139,6 @@ namespace LabelEngine2.Presenters
         public void ChangeTable()
         {
             _model.DataProvider.OnTableChanged();
-        }
-
-        
+        }   
     }
 }

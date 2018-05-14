@@ -13,6 +13,7 @@ namespace LabelPrintUI
     {
         private BindingSource binding;
         private ProgressBarForm progressBarForm;
+        private bool askToSave = false;
 
         public mainForm()
         {
@@ -56,17 +57,24 @@ namespace LabelPrintUI
                 Presenter.FillColumnList(); //Заполнить список заголовков для поиска (searchColumnCB)
                 void bw_DoWork(object s, System.ComponentModel.DoWorkEventArgs eventArgs)
                 {
-                    Presenter.LoadDataTable(dialog.FileName); //Загружаем данные в gridView
+                    try
+                    {
+                        Presenter.LoadDataTable(dialog.FileName); //Загружаем данные в gridView
+                    }
+                    catch (Exception exc)
+                    {
+                        MessageBox.Show(exc.Message, "Произошла ошибка при загрузке таблицы", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
 
                 void bw_RunWorkerCompleted(object s, RunWorkerCompletedEventArgs runWorkerCompletedEventArgs)
                 {
                     progressBarForm.Close();
                     Presenter.LastFileName = dialog.FileName;
+                    askToSave = true;
                 }
 
             }
-
         }
 
         public new void Show()
@@ -84,8 +92,15 @@ namespace LabelPrintUI
 
         private void mainForm_Load(object sender, EventArgs e)
         {
-            Presenter.LoadTemplates(); //Загрузить шаблоны
-            Presenter.UpdateTemplateList(); //Обновить список шаблонов
+            try
+            {
+                Presenter.LoadTemplates(); //Загрузить шаблоны
+                Presenter.UpdateTemplateList(); //Обновить список шаблонов
+            }
+            catch (Exception exc)
+            {
+                MessageBox.Show(exc.Message, "Произошла ошибка при открытии формы", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void exitMenuItem_Click(object sender, EventArgs e)
@@ -95,7 +110,34 @@ namespace LabelPrintUI
 
         private void mainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Presenter.ActionsBeforeClose(); //Выполнить какие-то действия перед закрытием формы (действия определяются презентером)
+            try
+            {
+                if (askToSave)
+                {
+                    var confirmResult = MessageBox.Show("Сохранить таблицу?",
+                                       "Сохранение",
+                                       MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                    if (confirmResult == DialogResult.Yes)
+                    {
+                        try
+                        {
+                            clearSearchTextBtn_Click(sender, new EventArgs());
+                            saveMenuItem_Click(sender, new EventArgs());
+                        }
+                        catch (Exception exc)
+                        {
+                            MessageBox.Show(exc.Message, "Произошла ошибка при сохранении", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
+                }
+
+                Presenter.ActionsBeforeClose(); //Выполнить какие-то действия перед закрытием формы (действия определяются презентером)
+            }
+            catch (Exception exc)
+            {
+                MessageBox.Show(exc.Message, "Произошла ошибка при закрытии формы", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void gridView_RowEnter(object sender, DataGridViewCellEventArgs e)
@@ -106,8 +148,15 @@ namespace LabelPrintUI
 
         private void printBtn_Click(object sender, EventArgs e)
         {
-            if ((templatesListBox.SelectedIndex >= 0) && (gridView.SelectedCells.Count > 0))
-                Presenter.PrintLabel(templatesListBox.SelectedItem.ToString());
+            try
+            {
+                if ((templatesListBox.SelectedIndex >= 0) && (gridView.SelectedCells.Count > 0))
+                    Presenter.PrintLabel(templatesListBox.SelectedItem.ToString());
+            }
+            catch (Exception exc)
+            {
+                MessageBox.Show(exc.Message, "Произошла ошибка при печати", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void searchBtn_Click(object sender, EventArgs e)
@@ -141,12 +190,14 @@ namespace LabelPrintUI
 
         private void gridView_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
+            askToSave = true;
             Presenter.ChangeTable();
             this.gridView_SelectionChanged(sender, e);
         }
 
         private void gridView_UserAddedRow(object sender, DataGridViewRowEventArgs e)
         {
+            askToSave = true;
             gridView.Update();
             gridView.Refresh();
             Presenter.ChangeTable();
@@ -176,7 +227,7 @@ namespace LabelPrintUI
                     }
                     catch (Exception exc)
                     {
-                        MessageBox.Show(exc.Message, "Произошла ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(exc.Message, "Произошла ошибка при сохранении", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
             }
@@ -185,6 +236,7 @@ namespace LabelPrintUI
             {
                 progressBarForm.Close();
                 Presenter.LastFileName = saveFileDialog.FileName;
+                askToSave = false;
             }
         }
 
@@ -211,13 +263,14 @@ namespace LabelPrintUI
                 }
                 catch (Exception exc)
                 {
-                    MessageBox.Show(exc.Message, "Произошла ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(exc.Message, "Произошла ошибка при сохранении", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
 
             void bw_RunWorkerCompleted(object s1, RunWorkerCompletedEventArgs runWorkerCompletedEventArgs)
             {
                 progressBarForm.Close();
+                askToSave = false;
             }
         }
 
@@ -242,6 +295,12 @@ namespace LabelPrintUI
                 searchBtn_Click(sender, new EventArgs());
                 e.SuppressKeyPress = true;  // Stops other controls on the form receiving event.
             }
+        }
+
+        private void createDocumentMenuItem_Click(object sender, EventArgs e)
+        {
+            Presenter.CreateNewDocument();
+            askToSave = true;
         }
     }
 }

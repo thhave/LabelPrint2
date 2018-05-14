@@ -41,6 +41,12 @@ namespace LabelPrintUI
 
         private void saveFieldBtn_Click(object sender, EventArgs e)
         {
+            if ((fieldNameTB.Text == "") || (textTB.Text == "") || (FieldFont == null))
+            {
+                MessageBox.Show("Заполните поля!", "Внимание", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             if (!editingMode)
                 Presenter.AddField(EditingTemplateName);
             else

@@ -121,6 +121,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(456, 144);
+            this.ControlBox = false;
             this.Controls.Add(this.fieldNameTB);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.cancelBtn);
@@ -131,7 +132,11 @@
             this.Controls.Add(this.textTB);
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "EditFieldForm";
+            this.ShowIcon = false;
+            this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Редактирование текстового поля";
             this.ResumeLayout(false);

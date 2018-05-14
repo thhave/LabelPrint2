@@ -148,5 +148,31 @@ namespace LabelEngine2.Models
                 throw new Exception(exc.Message);
             }
         }
+
+        public void CreateNew()
+        {
+            int startColumnIndex = 1;//Индекс первого столбца
+            int headerRowIndex = 1; //Индекс строки заголовков
+            int startRowIndex = headerRowIndex + 1;  //Индекс первой строки данных
+            int endColumnIndex = 10;
+
+            TableHeader = new List<string>();
+            //Получаем заголовки:
+            for (int i = startColumnIndex; i <= endColumnIndex; ++i)
+            {
+                TableHeader.Add(string.Format("Column {0}", i));
+            }
+
+            this.Columns.Clear();
+            foreach (string h in TableHeader)
+            {
+                this.Columns.Add(new DataColumn(h)); //Заполняем DataTable заголовками столбцов
+            }
+
+            this.Rows.Clear();
+            string[] newRow = new string[endColumnIndex - startColumnIndex];
+            this.Rows.Add(newRow);
+            this.TableChanged();
+        }
     }
 }

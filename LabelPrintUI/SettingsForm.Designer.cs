@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SettingsForm));
             this.settingsTabControl = new System.Windows.Forms.TabControl();
             this.templatesSettingsPage = new System.Windows.Forms.TabPage();
             this.fieldHeightDecBtn = new System.Windows.Forms.Button();
@@ -162,7 +163,7 @@
             // 
             this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(609, 260);
+            this.label5.Location = new System.Drawing.Point(604, 261);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(45, 13);
             this.label5.TabIndex = 24;
@@ -172,7 +173,7 @@
             // 
             this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(609, 234);
+            this.label4.Location = new System.Drawing.Point(604, 235);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(46, 13);
             this.label4.TabIndex = 23;
@@ -181,20 +182,20 @@
             // fieldHeightTB
             // 
             this.fieldHeightTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.fieldHeightTB.Location = new System.Drawing.Point(661, 257);
+            this.fieldHeightTB.Location = new System.Drawing.Point(660, 258);
             this.fieldHeightTB.Name = "fieldHeightTB";
             this.fieldHeightTB.ReadOnly = true;
-            this.fieldHeightTB.Size = new System.Drawing.Size(63, 20);
+            this.fieldHeightTB.Size = new System.Drawing.Size(64, 20);
             this.fieldHeightTB.TabIndex = 22;
             this.fieldHeightTB.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // fieldWidthTB
             // 
             this.fieldWidthTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.fieldWidthTB.Location = new System.Drawing.Point(661, 231);
+            this.fieldWidthTB.Location = new System.Drawing.Point(660, 231);
             this.fieldWidthTB.Name = "fieldWidthTB";
             this.fieldWidthTB.ReadOnly = true;
-            this.fieldWidthTB.Size = new System.Drawing.Size(63, 20);
+            this.fieldWidthTB.Size = new System.Drawing.Size(64, 20);
             this.fieldWidthTB.TabIndex = 21;
             this.fieldWidthTB.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
@@ -386,7 +387,6 @@
             this.printerListCB.Name = "printerListCB";
             this.printerListCB.Size = new System.Drawing.Size(312, 21);
             this.printerListCB.TabIndex = 0;
-            this.printerListCB.SelectedIndexChanged += new System.EventHandler(this.printerListCB_SelectedIndexChanged);
             // 
             // systemSettingsTabPage
             // 
@@ -403,6 +403,7 @@
             // 
             // browseTemplatePathBtn
             // 
+            this.browseTemplatePathBtn.Enabled = false;
             this.browseTemplatePathBtn.Location = new System.Drawing.Point(569, 14);
             this.browseTemplatePathBtn.Name = "browseTemplatePathBtn";
             this.browseTemplatePathBtn.Size = new System.Drawing.Size(75, 23);
@@ -412,6 +413,7 @@
             // 
             // templatesPathTB
             // 
+            this.templatesPathTB.Enabled = false;
             this.templatesPathTB.Location = new System.Drawing.Point(184, 16);
             this.templatesPathTB.Name = "templatesPathTB";
             this.templatesPathTB.Size = new System.Drawing.Size(367, 20);
@@ -434,9 +436,12 @@
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.settingsTabControl);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimumSize = new System.Drawing.Size(816, 489);
             this.Name = "SettingsForm";
+            this.ShowIcon = false;
+            this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Параметры";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.SettingsForm_FormClosed);

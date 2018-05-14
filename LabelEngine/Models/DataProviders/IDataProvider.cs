@@ -10,5 +10,6 @@ namespace LabelEngine2.Models
         void OnTableChanged();
         void Load(string filePath);
         void Save(string filePath);
+        void CreateNew();
     }
 }

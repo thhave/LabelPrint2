@@ -115,6 +115,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(350, 178);
+            this.ControlBox = false;
             this.Controls.Add(this.cancelBtn);
             this.Controls.Add(this.createTemplateBtn);
             this.Controls.Add(this.templateHeightTB);
@@ -124,7 +125,11 @@
             this.Controls.Add(this.templateNameTB);
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "NewTemplateForm";
+            this.ShowIcon = false;
+            this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Создание нового шаблона";
             this.ResumeLayout(false);

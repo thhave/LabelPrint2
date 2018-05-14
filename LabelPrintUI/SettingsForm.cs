@@ -16,7 +16,7 @@ namespace LabelPrintUI
         public List<string> TemplateList { get => (List<string>)templateListLB.DataSource; set => templateListLB.DataSource = value; }
         public List<string> SelectedTemplateFieldList { get => (List<string>)fieldsListCB.DataSource; set => fieldsListCB.DataSource = value; }
         public float FieldWidth { get => (float)Convert.ToDouble(fieldWidthTB.Text) / 100; set => fieldWidthTB.Text = Convert.ToString(100 * value); }
-        public float FieldHeight { get => (float)Convert.ToDouble(fieldHeightTB.Text) / 100; set => fieldHeightTB.Text = Convert.ToString( 100 * value); }
+        public float FieldHeight { get => (float)Convert.ToDouble(fieldHeightTB.Text) / 100; set => fieldHeightTB.Text = Convert.ToString(100 * value); }
 
         public SettingsForm()
         {
@@ -29,7 +29,7 @@ namespace LabelPrintUI
         }
 
         private void addTemplateBtn_Click(object sender, EventArgs e)
-        {              
+        {
             var newTemplatePresenter = new NewTemplatePresenter(new NewTemplateForm(), Presenter.Model);
             newTemplatePresenter.Run();
             Presenter.UpdateTemplates();
@@ -40,19 +40,43 @@ namespace LabelPrintUI
 
         private void SettingsForm_Load(object sender, EventArgs e)
         {
-            Presenter.LoadSettings();
-            Presenter.UpdateTemplates();
-            if (templateListLB.SelectedIndex < 0)
-                return;
-            Presenter.UpdateFields(templateListLB.SelectedItem.ToString());
+            try
+            {
+                Presenter.LoadSettings();
+                string lastPrinterName = Presenter.GetPrinterName();
+                if (printerListCB.Items.Contains(lastPrinterName))
+                {
+                    printerListCB.SelectedIndex = printerListCB.Items.IndexOf(lastPrinterName);
+                }
+
+                Presenter.UpdateTemplates();
+                if (templateListLB.SelectedIndex < 0)
+                    return;
+                Presenter.UpdateFields(templateListLB.SelectedItem.ToString());
+            }
+            catch (Exception exc)
+            {
+                MessageBox.Show(exc.Message, "Произошла ошибка при открытии параметров", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void deleteTemplateBtn_Click(object sender, EventArgs e)
         {
             if (templateListLB.SelectedIndex < 0)
+            {
+                MessageBox.Show("Не выбран шаблон!", "Внимание", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
-            Presenter.DeleteTemplate(templateListLB.SelectedItem.ToString());
-            Presenter.UpdateTemplates();
+            }
+
+            var confirmResult = MessageBox.Show("Вы действительно хотите удалить шаблон?",
+                                    "Подтверждение удаления",
+                                    MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (confirmResult == DialogResult.Yes)
+            {
+                Presenter.DeleteTemplate(templateListLB.SelectedItem.ToString());
+                Presenter.UpdateTemplates();
+            }
         }
 
         private void templateListLB_SelectedIndexChanged(object sender, EventArgs e)
@@ -76,14 +100,14 @@ namespace LabelPrintUI
         {
             if ((templateListLB.SelectedIndex < 0) || (fieldsListCB.SelectedIndex < 0))
                 return;
-            Presenter.UpdateFieldSettings(templateListLB.SelectedItem.ToString(), fieldsListCB.SelectedItem.ToString());  
+            Presenter.UpdateFieldSettings(templateListLB.SelectedItem.ToString(), fieldsListCB.SelectedItem.ToString());
         }
 
         private void moveDownBtn_Click(object sender, EventArgs e)
         {
             if ((templateListLB.SelectedIndex < 0) || (fieldsListCB.SelectedIndex < 0))
                 return;
-            Presenter.MoveField(templateListLB.SelectedItem.ToString(), fieldsListCB.SelectedItem.ToString(), MovementDirection.Down); 
+            Presenter.MoveField(templateListLB.SelectedItem.ToString(), fieldsListCB.SelectedItem.ToString(), MovementDirection.Down);
         }
 
         private void moveUpBtn_Click(object sender, EventArgs e)
@@ -102,7 +126,17 @@ namespace LabelPrintUI
 
         private void SettingsForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            Presenter.SaveSettings();   
+            try
+            {
+                if (printerListCB.SelectedIndex < 0)
+                    return;
+                Presenter.ChangePrinter(printerListCB.SelectedItem.ToString());
+                Presenter.SaveSettings(printerListCB.SelectedItem.ToString());
+            }
+            catch (Exception exc)
+            {
+                MessageBox.Show(exc.Message, "Произошла ошибка при закрытии параметров", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void moveLeftBtn_Click(object sender, EventArgs e)
@@ -138,12 +172,24 @@ namespace LabelPrintUI
 
         private void deleteFieldBtn_Click(object sender, EventArgs e)
         {
+
             if ((templateListLB.SelectedIndex < 0) || (fieldsListCB.SelectedIndex < 0))
+            {
+                MessageBox.Show("Убедитесь, что шаблон и поле правильно выбраны!", "Внимание", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
-            string templateName = templateListLB.SelectedItem.ToString();
-            Presenter.DeleteField(templateName, fieldsListCB.SelectedItem.ToString());
-            Presenter.UpdateFields(templateName);
-            Presenter.UpdateDesigner(templateName);
+            }
+
+            var confirmResult = MessageBox.Show("Вы действительно хотите удалить поле?",
+                                     "Подтверждение удаления",
+                                     MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (confirmResult == DialogResult.Yes)
+            {
+                string templateName = templateListLB.SelectedItem.ToString();
+                Presenter.DeleteField(templateName, fieldsListCB.SelectedItem.ToString());
+                Presenter.UpdateFields(templateName);
+                Presenter.UpdateDesigner(templateName);
+            }
+
         }
 
         private void fieldWidthIncBtn_Click(object sender, EventArgs e)
@@ -180,13 +226,6 @@ namespace LabelPrintUI
             Presenter.ChangeFieldSize(templateListLB.SelectedItem.ToString(), fieldsListCB.SelectedItem.ToString(), SizeChanges.DecreaseFieldHeight);
             string templateName = templateListLB.SelectedItem.ToString();
             Presenter.UpdateDesigner(templateName);
-        }
-
-        private void printerListCB_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (printerListCB.SelectedIndex < 0)
-                return;
-            Presenter.ChangePrinter(printerListCB.SelectedItem.ToString());
         }
     }
 }
