@@ -23,8 +23,8 @@ namespace LabelEngine2.Models
 
         public void OnTableChanged()
         {
-            DataView dv = new DataView(this);
-            dv.RowFilter = this.DefaultView.RowFilter;
+            DataView dv = this.DefaultView;//new DataView(this);
+            //dv.RowFilter = this.DefaultView.RowFilter;
 
             Data = new List<Dictionary<string, string>>();
             //Добавление строк в DataTable

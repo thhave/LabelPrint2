@@ -302,5 +302,10 @@ namespace LabelPrintUI
             Presenter.CreateNewDocument();
             askToSave = true;
         }
+
+        private void gridView_Sorted(object sender, EventArgs e)
+        {
+            Presenter.ChangeTable();
+        }
     }
 }
